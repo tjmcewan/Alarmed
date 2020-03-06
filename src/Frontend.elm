@@ -7,6 +7,12 @@ import Http
 import Lamdera exposing (sendToBackend)
 import Types exposing (..)
 
+import Element exposing (Element, el, text, row, column, alignRight, fill, width, rgb255, spacing, centerY, padding)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
+import Element.Input as Input
+
 
 type alias Model =
     FrontendModel
@@ -61,9 +67,21 @@ updateFromBackend msg model =
 
 view : Model -> Html FrontendMsg
 view model =
-    Html.div [ style "padding" "30px" ]
-        [ Html.button [ onClick Increment ] [ text "+" ]
-        , Html.text (String.fromInt model.counter)
-        , Html.button [ onClick Decrement ] [ text "-" ]
-        , Html.div [] [ Html.text "Click me then refresh me!" ]
+    Element.layout
+        [ Background.color (rgb255 15 15 15)
+        , Font.color (rgb255 255 255 255)
+        , Border.rounded 3
+        , padding 30
+        ]
+        <| column [] [
+            row []
+            [ Input.button [padding 30] { onPress = Just Increment, label = text "+" }
+            , el [] ( text (String.fromInt model.counter))
+            , Input.button [padding 30] { onPress = Just Decrement, label = text "-" }
+            , el [] (text "Click me then refresh me!")
+            ]
+            ,row [] [
+
+            el [] (text <| "Last message from: " ++ model.clientId)
+            ]
         ]
