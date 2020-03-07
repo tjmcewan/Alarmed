@@ -41,11 +41,7 @@ app =
 
 init : ( Model, Cmd FrontendMsg )
 init =
-    ( { newItemText = "", items = [] }, Cmd.none )
-
-
-
--- ( { newItemText = "", items = initialItems }, sendToBackend ClientJoin )
+    ( { newItemText = "", items = [] }, sendToBackend ClientJoin )
 
 
 maxId : List Item -> Maybe Int
@@ -72,13 +68,16 @@ update msg model =
                     , name = newItemName
                     , status = Incomplete
                     }
+
+                newItems =
+                    model.items ++ [ newItem ]
             in
             case String.length newItemName of
                 0 ->
                     ( model, Cmd.none )
 
                 _ ->
-                    ( { model | newItemText = "", items = model.items ++ [ newItem ] }, Cmd.none )
+                    ( { model | newItemText = "", items = newItems }, sendToBackend (PersistItems newItems) )
 
         AddItemFromButton newItemName ->
             model |> update (AddItem newItemName)

@@ -37,6 +37,7 @@ type FrontendMsg
 
 type ToBackend
     = ClientJoin
+    | PersistItems (List Item)
 
 
 type BackendMsg
