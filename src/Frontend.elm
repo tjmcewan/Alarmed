@@ -1,6 +1,6 @@
 module Frontend exposing (Model, app)
 
-import Element exposing (Element, column, el, fill, padding, rgb255, row, spacing, text, width)
+import Element exposing (Element, column, el, fill, height, padding, px, rgb255, row, spacing, text, width)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
@@ -82,6 +82,28 @@ update msg model =
         AddItemFromButton newItemName ->
             model |> update (AddItem newItemName)
 
+        SetStatus itemId newStatus ->
+            let
+                boolToStatus bool =
+                    if bool then
+                        Complete
+
+                    else
+                        Incomplete
+
+                updater =
+                    \item ->
+                        if item.id == itemId then
+                            { item | status = boolToStatus newStatus }
+
+                        else
+                            item
+
+                updatedItems =
+                    List.map updater model.items
+            in
+            ( { model | items = updatedItems }, sendToBackend (PersistItems updatedItems) )
+
 
 updateFromBackend : ToFrontend -> Model -> ( Model, Cmd FrontendMsg )
 updateFromBackend msg model =
@@ -112,10 +134,11 @@ view model =
     Element.layout
         [ Background.color (rgb255 51 51 51)
         , Font.color (rgb255 255 255 255)
+        , padding 10
         ]
     <|
-        column []
-            [ row []
+        column [ spacing 10 ] <|
+            [ row [ spacing 10 ]
                 [ Input.text
                     [ Font.color (rgb255 0 0 0)
                     , onEnter (AddItem model.newItemText)
@@ -125,21 +148,34 @@ view model =
                     , placeholder = Just (Input.placeholder [] (text "New item..."))
                     , text = model.newItemText
                     }
-                , Input.button [] { onPress = Just (AddItemFromButton model.newItemText), label = text "Add item" }
-                ]
-            , row []
-                [ Element.table []
-                    { data = model.items
-                    , columns =
-                        [ { header = text "id"
-                          , width = fill
-                          , view = \item -> text <| String.fromInt item.id
-                          }
-                        , { header = text "name"
-                          , width = fill
-                          , view = \item -> text item.name
-                          }
-                        ]
-                    }
+                , Input.button
+                    [ Border.width 1
+                    , Border.rounded 3
+                    , padding 10
+                    ]
+                    { onPress = Just (AddItemFromButton model.newItemText), label = text "Add item" }
                 ]
             ]
+                ++ List.map itemView model.items
+
+
+statusDisplay : Status -> Bool
+statusDisplay status =
+    case status of
+        Incomplete ->
+            False
+
+        Complete ->
+            True
+
+
+itemView : Item -> Element FrontendMsg
+itemView item =
+    row []
+        [ Input.checkbox []
+            { onChange = SetStatus item.id
+            , icon = Input.defaultCheckbox
+            , checked = statusDisplay item.status
+            , label = Input.labelRight [] (text item.name)
+            }
+        ]

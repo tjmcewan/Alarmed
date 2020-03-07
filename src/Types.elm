@@ -9,8 +9,12 @@ type Status
     | Complete
 
 
+type alias ItemId =
+    Int
+
+
 type alias Item =
-    { id : Int
+    { id : ItemId
     , name : String
     , status : Status
     }
@@ -33,6 +37,7 @@ type FrontendMsg
     | Update String
     | AddItem String
     | AddItemFromButton String
+    | SetStatus ItemId Bool
 
 
 type ToBackend
