@@ -39,7 +39,7 @@ updateFromFrontend sessionId clientId msg model =
             )
 
         PersistItems items ->
-            ( { model | items = items }, Cmd.none )
+            ( { model | items = items }, broadcast model.clients (ItemsNewValue items) )
 
 
 broadcast clients msg =
