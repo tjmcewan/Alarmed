@@ -20,7 +20,7 @@ app =
 
 init : ( Model, Cmd BackendMsg )
 init =
-    ( { counter = 0, clients = Set.empty }, Cmd.none )
+    ( { items = [], clients = Set.empty }, Cmd.none )
 
 
 update : BackendMsg -> Model -> ( Model, Cmd BackendMsg )
@@ -35,22 +35,8 @@ updateFromFrontend sessionId clientId msg model =
     case msg of
         ClientJoin ->
             ( { model | clients = Set.insert clientId model.clients }
-            , sendToFrontend clientId (CounterNewValue model.counter clientId)
+            , sendToFrontend clientId (ItemsNewValue model.items)
             )
-
-        CounterIncremented ->
-            let
-                newCounterValue =
-                    model.counter + 1
-            in
-            ( { model | counter = newCounterValue }, broadcast model.clients (CounterNewValue newCounterValue clientId) )
-
-        CounterDecremented ->
-            let
-                newCounterValue =
-                    model.counter - 1
-            in
-            ( { model | counter = newCounterValue }, broadcast model.clients (CounterNewValue newCounterValue clientId) )
 
 
 broadcast clients msg =

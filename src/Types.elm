@@ -4,28 +4,39 @@ import Lamdera exposing (ClientId)
 import Set exposing (Set)
 
 
+type Status
+    = Incomplete
+    | Complete
+
+
+type alias Item =
+    { id : Int
+    , name : String
+    , status : Status
+    }
+
+
 type alias BackendModel =
-    { counter : Int
-    , clients : Set ClientId
+    { clients : Set ClientId
+    , items : List Item
     }
 
 
 type alias FrontendModel =
-    { counter : Int
-    , clientId : String
+    { newItemText : String
+    , items : List Item
     }
 
 
 type FrontendMsg
-    = Increment
-    | Decrement
-    | FNoop
+    = FNoop
+    | Update String
+    | AddItem String
+    | AddItemFromEnterKey String
 
 
 type ToBackend
     = ClientJoin
-    | CounterIncremented
-    | CounterDecremented
 
 
 type BackendMsg
@@ -33,4 +44,4 @@ type BackendMsg
 
 
 type ToFrontend
-    = CounterNewValue Int String
+    = ItemsNewValue (List Item)
