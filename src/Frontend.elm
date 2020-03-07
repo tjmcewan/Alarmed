@@ -169,6 +169,16 @@ statusDisplay status =
             True
 
 
+fontStyle : Status -> Element.Attribute FrontendMsg
+fontStyle status =
+    case status of
+        Complete ->
+            Font.strike
+
+        _ ->
+            Font.unitalicized
+
+
 itemView : Item -> Element FrontendMsg
 itemView item =
     row []
@@ -176,6 +186,6 @@ itemView item =
             { onChange = SetStatus item.id
             , icon = Input.defaultCheckbox
             , checked = statusDisplay item.status
-            , label = Input.labelRight [] (text item.name)
+            , label = Input.labelRight [ fontStyle item.status ] (text item.name)
             }
         ]
