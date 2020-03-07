@@ -104,6 +104,21 @@ update msg model =
             in
             ( { model | items = updatedItems }, sendToBackend (PersistItems updatedItems) )
 
+        DeleteItem itemId ->
+            let
+                updater =
+                    \item ->
+                        if item.id == itemId then
+                            { item | status = Deleted }
+
+                        else
+                            item
+
+                updatedItems =
+                    List.map updater model.items
+            in
+            ( { model | items = updatedItems }, sendToBackend (PersistItems updatedItems) )
+
 
 updateFromBackend : ToFrontend -> Model -> ( Model, Cmd FrontendMsg )
 updateFromBackend msg model =
@@ -156,17 +171,20 @@ view model =
                     { onPress = Just (AddItemFromButton model.newItemText), label = text "Add item" }
                 ]
             ]
-                ++ List.map itemView model.items
+                ++ (model.items
+                        |> List.filter (\i -> i.status /= Deleted)
+                        |> List.map itemView
+                   )
 
 
 statusDisplay : Status -> Bool
 statusDisplay status =
     case status of
-        Incomplete ->
-            False
-
         Complete ->
             True
+
+        _ ->
+            False
 
 
 fontStyle : Status -> Element.Attribute FrontendMsg
@@ -181,11 +199,22 @@ fontStyle status =
 
 itemView : Item -> Element FrontendMsg
 itemView item =
-    row []
+    row [ spacing 10 ]
         [ Input.checkbox []
             { onChange = SetStatus item.id
             , icon = Input.defaultCheckbox
             , checked = statusDisplay item.status
             , label = Input.labelRight [ fontStyle item.status ] (text item.name)
             }
+        , deleteView item
         ]
+
+
+deleteView : Item -> Element FrontendMsg
+deleteView item =
+    case item.status of
+        Complete ->
+            Input.button [] { onPress = Just (DeleteItem item.id), label = text "[x]" }
+
+        _ ->
+            Element.none

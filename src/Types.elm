@@ -7,6 +7,7 @@ import Set exposing (Set)
 type Status
     = Incomplete
     | Complete
+    | Deleted
 
 
 type alias ItemId =
@@ -38,6 +39,7 @@ type FrontendMsg
     | AddItem String
     | AddItemFromButton String
     | SetStatus ItemId Bool
+    | DeleteItem ItemId
 
 
 type ToBackend
