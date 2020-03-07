@@ -80,7 +80,7 @@ update msg model =
                 _ ->
                     ( { model | newItemText = "", items = model.items ++ [ newItem ] }, Cmd.none )
 
-        AddItemFromEnterKey newItemName ->
+        AddItemFromButton newItemName ->
             model |> update (AddItem newItemName)
 
 
@@ -119,14 +119,14 @@ view model =
             [ row []
                 [ Input.text
                     [ Font.color (rgb255 0 0 0)
-                    , onEnter (AddItemFromEnterKey model.newItemText)
+                    , onEnter (AddItem model.newItemText)
                     ]
                     { label = Input.labelHidden "New item"
                     , onChange = \v -> Update v
                     , placeholder = Just (Input.placeholder [] (text "New item..."))
                     , text = model.newItemText
                     }
-                , Input.button [] { onPress = Just (AddItem model.newItemText), label = text "New" }
+                , Input.button [] { onPress = Just (AddItemFromButton model.newItemText), label = text "Add item" }
                 ]
             , row []
                 [ Element.table []

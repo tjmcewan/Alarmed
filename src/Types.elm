@@ -32,7 +32,7 @@ type FrontendMsg
     = FNoop
     | Update String
     | AddItem String
-    | AddItemFromEnterKey String
+    | AddItemFromButton String
 
 
 type ToBackend
