@@ -73,7 +73,12 @@ update msg model =
                     , status = Incomplete
                     }
             in
-            ( { model | items = model.items ++ [ newItem ] }, Cmd.none )
+            case String.length newItemName of
+                0 ->
+                    ( model, Cmd.none )
+
+                _ ->
+                    ( { model | newItemText = "", items = model.items ++ [ newItem ] }, Cmd.none )
 
         AddItemFromEnterKey newItemName ->
             model |> update (AddItem newItemName)
@@ -112,8 +117,7 @@ view model =
     <|
         column []
             [ row []
-                [ Input.button [] { onPress = Just (AddItem model.newItemText), label = text "New" }
-                , Input.text
+                [ Input.text
                     [ Font.color (rgb255 0 0 0)
                     , onEnter (AddItemFromEnterKey model.newItemText)
                     ]
@@ -122,6 +126,7 @@ view model =
                     , placeholder = Just (Input.placeholder [] (text "New item..."))
                     , text = model.newItemText
                     }
+                , Input.button [] { onPress = Just (AddItem model.newItemText), label = text "New" }
                 ]
             , row []
                 [ Element.table []
