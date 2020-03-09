@@ -193,14 +193,17 @@ statusDisplay status =
             True
 
 
-fontStyle : Status -> Element.Attribute FrontendMsg
+fontStyle : Status -> List (Element.Attribute FrontendMsg)
 fontStyle status =
     case status of
-        Complete ->
-            Font.strike
+        Incomplete ->
+            [ Font.unitalicized ]
 
-        _ ->
-            Font.unitalicized
+        Complete ->
+            [ Font.strike ]
+
+        Deleted ->
+            [ Font.strike, Font.italic ]
 
 
 itemsView : Bool -> List Item -> List (Element FrontendMsg)
@@ -221,7 +224,7 @@ itemView item =
             { onChange = SetStatus item.id
             , icon = Input.defaultCheckbox
             , checked = statusDisplay item.status
-            , label = Input.labelRight [ fontStyle item.status ] (text item.name)
+            , label = Input.labelRight (fontStyle item.status) (text item.name)
             }
         , deleteView item
         ]
