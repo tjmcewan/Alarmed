@@ -186,11 +186,11 @@ view model =
 statusDisplay : Status -> Bool
 statusDisplay status =
     case status of
-        Complete ->
-            True
+        Incomplete ->
+            False
 
         _ ->
-            False
+            True
 
 
 fontStyle : Status -> Element.Attribute FrontendMsg
