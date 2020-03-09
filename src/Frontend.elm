@@ -41,7 +41,7 @@ app =
 
 init : ( Model, Cmd FrontendMsg )
 init =
-    ( { newItemText = "", items = [] }, sendToBackend ClientJoin )
+    ( { newItemText = "", items = [], showDeleted = False }, sendToBackend ClientJoin )
 
 
 maxId : List Item -> Maybe Int
@@ -119,6 +119,9 @@ update msg model =
             in
             ( { model | items = updatedItems }, sendToBackend (PersistItems updatedItems) )
 
+        ToggleDeleted ->
+            ( { model | showDeleted = not model.showDeleted }, Cmd.none )
+
 
 updateFromBackend : ToFrontend -> Model -> ( Model, Cmd FrontendMsg )
 updateFromBackend msg model =
@@ -169,12 +172,15 @@ view model =
                     , padding 10
                     ]
                     { onPress = Just (AddItemFromButton model.newItemText), label = text "Add item" }
+                , Input.button
+                    [ Border.width 1
+                    , Border.rounded 3
+                    , padding 10
+                    ]
+                    { onPress = Just ToggleDeleted, label = text "Show deleted" }
                 ]
             ]
-                ++ (model.items
-                        |> List.filter (\i -> i.status /= Deleted)
-                        |> List.map itemView
-                   )
+                ++ itemsView model.showDeleted model.items
 
 
 statusDisplay : Status -> Bool
@@ -195,6 +201,17 @@ fontStyle status =
 
         _ ->
             Font.unitalicized
+
+
+itemsView : Bool -> List Item -> List (Element FrontendMsg)
+itemsView showDeleted items =
+    if showDeleted then
+        items |> List.map itemView
+
+    else
+        items
+            |> List.filter (\i -> i.status /= Deleted)
+            |> List.map itemView
 
 
 itemView : Item -> Element FrontendMsg

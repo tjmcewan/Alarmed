@@ -30,6 +30,7 @@ type alias BackendModel =
 type alias FrontendModel =
     { newItemText : String
     , items : List Item
+    , showDeleted : Bool
     }
 
 
@@ -40,6 +41,7 @@ type FrontendMsg
     | AddItemFromButton String
     | SetStatus ItemId Bool
     | DeleteItem ItemId
+    | ToggleDeleted
 
 
 type ToBackend
