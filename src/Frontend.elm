@@ -172,12 +172,7 @@ view model =
                     , padding 10
                     ]
                     { onPress = Just (AddItemFromButton model.newItemText), label = text "Add item" }
-                , Input.button
-                    [ Border.width 1
-                    , Border.rounded 3
-                    , padding 10
-                    ]
-                    { onPress = Just ToggleDeleted, label = text "Show deleted" }
+                , toggleDeletedBtn model.showDeleted
                 ]
             ]
                 ++ itemsView model.showDeleted model.items
@@ -238,3 +233,21 @@ deleteView item =
 
         _ ->
             Element.none
+
+
+toggleDeletedBtn : Bool -> Element FrontendMsg
+toggleDeletedBtn showDeleted =
+    let
+        label =
+            if showDeleted then
+                "Hide deleted"
+
+            else
+                "Show deleted"
+    in
+    Input.button
+        [ Border.width 1
+        , Border.rounded 3
+        , padding 10
+        ]
+        { onPress = Just ToggleDeleted, label = text label }
